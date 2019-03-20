@@ -2,7 +2,7 @@ import MySQLdb
 import bs4
 from bs4 import BeautifulSoup
 import requests
-import re
+
 r=requests.get("https://movie.douban.com/")
 demo=r.text
 soup=BeautifulSoup(demo,"html.parser")
@@ -18,8 +18,7 @@ conn=MySQLdb.connect(
 cursor=conn.cursor()
 cursor.execute("CREATE TABLE if not exists movie(name varchar(200) not null PRIMARY KEY,rate varchar(10)  null)default charset='utf8';")
 
-movielist=[]
-ratelist=[]
+
 for i in soup.find_all("li"):
     s=i.get("data-title")
     rate=i.get("data-rate")
