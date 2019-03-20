@@ -1,0 +1,35 @@
+import MySQLdb
+import bs4
+from bs4 import BeautifulSoup
+import requests
+import re
+r=requests.get("https://movie.douban.com/")
+demo=r.text
+soup=BeautifulSoup(demo,"html.parser")
+
+conn=MySQLdb.connect(
+    host='127.0.0.1',
+    user='root',
+    passwd='',
+    db='school',
+    port=3306,
+    charset='utf8'
+)
+cursor=conn.cursor()
+cursor.execute("CREATE TABLE if not exists movie(name varchar(200) not null PRIMARY KEY,rate varchar(10)  null)default charset='utf8';")
+
+movielist=[]
+ratelist=[]
+for i in soup.find_all("li"):
+    s=i.get("data-title")
+    rate=i.get("data-rate")
+    if s!=None:
+        try:
+            cursor.execute("INSERT INTO movie VALUE(%s,%s);", (s, rate))
+        except:
+            cursor.execute("REPLACE INTO movie VALUE(%s,%s);", (s, rate))
+
+
+
+conn.commit()
+cursor.close()
